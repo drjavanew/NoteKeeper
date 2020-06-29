@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
     private NoteRecyclerAdapter mNoteRecyclerAdapter;
     private AppBarConfiguration mAppBarConfiguration;
+    private RecyclerView mRecyclerItems;
+    private LinearLayoutManager mNotesLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +67,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initializeDisplayContent() {
-        final RecyclerView recyclerNotes = (RecyclerView) findViewById(R.id.list_items);
-        final LinearLayoutManager notesLayoutManager = new LinearLayoutManager(this);
-        recyclerNotes.setLayoutManager(notesLayoutManager);
+        mRecyclerItems = (RecyclerView) findViewById(R.id.list_items);
+        mNotesLayoutManager = new LinearLayoutManager(this);
 
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
         mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, notes);
-        recyclerNotes.setAdapter(mNoteRecyclerAdapter);
+        displayNote();
+    }
+
+    private void displayNote() {
+        mRecyclerItems.setLayoutManager(mNotesLayoutManager);
+        mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.NoteKeeper);
+        Menu menu = navigationView.getMenu();
+        menu.findItem(R.id.nav_notes).setChecked(true);
     }
 
     @Override
@@ -102,7 +112,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if(id == R.id.nav_notes){
-            handleSelection("Notes");
+            displayNote();
         } else if(id == R.id.nav_courses){
             handleSelection("Courses");
         } else if(id == R.id.nav_share){

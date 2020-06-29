@@ -5,14 +5,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_share"
-            android:icon="?attr/actionModeShareDrawable"
-            android:title="Share" />
-        <item
-            android:id="@+id/nav_send"
-            android:icon="@android:drawable/ic_menu_send"
-            android:title="Send" />
-        <item
             android:id="@+id/nav_notes"
             android:icon="@drawable/ic_menu_camera"
             android:title="Notes" />
@@ -20,5 +12,15 @@
             android:id="@+id/nav_courses"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Courses" />
+        <group android:id="@+id/Communication">
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@android:drawable/ic_menu_send"
+                android:title="Send" />
+            <item
+                android:id="@+id/nav_share"
+                android:icon="?attr/actionModeShareDrawable"
+                android:title="Share" />
+        </group>
     </group>
 </menu>
