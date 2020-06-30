@@ -15,6 +15,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity
     private AppBarConfiguration mAppBarConfiguration;
     private RecyclerView mRecyclerItems;
     private LinearLayoutManager mNotesLayoutManager;
+    private CourseRecyclerAdapter mCourseRecyclerAdapter;
+    private GridLayoutManager mCoursesLayoutManger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +72,14 @@ public class MainActivity extends AppCompatActivity
     private void initializeDisplayContent() {
         mRecyclerItems = (RecyclerView) findViewById(R.id.list_items);
         mNotesLayoutManager = new LinearLayoutManager(this);
+        mCoursesLayoutManger = new GridLayoutManager(this, 2);
 
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
         mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, notes);
+
+        List<CourseInfo> courses = DataManager.getInstance().getCourses();
+        mCourseRecyclerAdapter = new CourseRecyclerAdapter(this, courses);
+
         displayNote();
     }
 
@@ -79,9 +87,21 @@ public class MainActivity extends AppCompatActivity
         mRecyclerItems.setLayoutManager(mNotesLayoutManager);
         mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
 
+        selectNavigationMenuItem(R.id.nav_notes);
+    }
+
+    private void selectNavigationMenuItem(int id) {
         NavigationView navigationView = (NavigationView) findViewById(R.id.NoteKeeper);
         Menu menu = navigationView.getMenu();
-        menu.findItem(R.id.nav_notes).setChecked(true);
+        menu.findItem(id).setChecked(true);
+    }
+
+    private void displayCourses(){
+        mRecyclerItems.setLayoutManager(mCoursesLayoutManger);
+        mRecyclerItems.setAdapter(mCourseRecyclerAdapter);
+
+        selectNavigationMenuItem(R.id.nav_courses);
+
     }
 
     @Override
@@ -114,7 +134,7 @@ public class MainActivity extends AppCompatActivity
         if(id == R.id.nav_notes){
             displayNote();
         } else if(id == R.id.nav_courses){
-            handleSelection("Courses");
+            displayCourses();
         } else if(id == R.id.nav_share){
             handleSelection("Don't you think you've shared enough");
         } else if(id == R.id.nav_send){
