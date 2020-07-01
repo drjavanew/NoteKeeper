@@ -1,10 +1,12 @@
 package com.example.notekeeper;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +17,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,6 +51,11 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+        PreferenceManager.setDefaultValues(this,R.xml.general_preferences, false);
+        PreferenceManager.setDefaultValues(this,R.xml.data_sync_preferences, false);
+        PreferenceManager.setDefaultValues(this,R.xml.notification_preferences, false);
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.NoteKeeper);
         // Passing each menu ID as a set of Ids because each
@@ -67,6 +75,21 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mNoteRecyclerAdapter.notifyDataSetChanged();
+        updateNavHeader();
+    }
+
+    private void updateNavHeader() {
+        NavigationView navigationView = (NavigationView)findViewById(R.id.NoteKeeper);
+        View headerView = navigationView.getHeaderView(0);
+        TextView textUserName = (TextView) headerView.findViewById(R.id.text_user_name);
+        TextView textEmailAddress = (TextView) headerView.findViewById(R.id.text_email_address);
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        String userName = pref.getString("user_display_name", "");
+        String emailAddress = pref.getString("user_email_address", "");
+
+        textUserName.setText(userName);
+        textEmailAddress.setText(emailAddress);
     }
 
     private void initializeDisplayContent() {
@@ -123,6 +146,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.action_settings){
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
@@ -137,13 +172,22 @@ public class MainActivity extends AppCompatActivity
         } else if(id == R.id.nav_courses){
             displayCourses();
         } else if(id == R.id.nav_share){
-            handleSelection(R.string.nav_share_message);
+            //handleSelection(R.string.nav_share_message);
+            handleShare();
         } else if(id == R.id.nav_send){
-            handleSelection(R.string.nav_send_message);
+            handleSelection(R.id.nav_send);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void handleShare() {
+        View view = findViewById(R.id.list_items);
+    Snackbar.make(view, "Share to - " +
+                PreferenceManager.getDefaultSharedPreferences(this).getString("user_favorite_social","Google+"),
+                Snackbar.LENGTH_LONG).show();
+
     }
 
     private void handleSelection(int message_id) {

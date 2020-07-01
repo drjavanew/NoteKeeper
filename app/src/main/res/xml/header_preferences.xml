@@ -1,0 +1,23 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        android:foregroundTint="@color/colorPrimaryDark"
+        app:fragment="com.example.notekeeper.SettingsActivity$GeneralFragment"
+        app:icon="@drawable/ic_baseline_assignment_late_24"
+        app:key="general_header"
+        app:title="@string/general" />
+
+    <Preference
+        app:fragment="com.example.notekeeper.SettingsActivity$MessagesFragment"
+        app:icon="@drawable/ic_baseline_notification_important_24"
+        app:key="messages_header"
+        app:title="@string/notification_message" />
+
+    <Preference
+        app:fragment="com.example.notekeeper.SettingsActivity$SyncFragment"
+        app:icon="@drawable/sync"
+        app:key="sync_header"
+        app:title="@string/sync_header" />
+
+</PreferenceScreen>
