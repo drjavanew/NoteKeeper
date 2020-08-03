@@ -39,11 +39,7 @@ public class MainActivity extends AppCompatActivity
     private GridLayoutManager mCoursesLayoutManger;
     private NoteKeeperOpenHelper mDbOpenHelper;
 
-    @Override
-    protected void onDestroy() {
-        mDbOpenHelper.close();
-        super.onDestroy();
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +77,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onDestroy() {
+        mDbOpenHelper.close();
+        super.onDestroy();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         mNoteRecyclerAdapter.notifyDataSetChanged();
@@ -113,10 +115,11 @@ public class MainActivity extends AppCompatActivity
         List<CourseInfo> courses = DataManager.getInstance().getCourses();
         mCourseRecyclerAdapter = new CourseRecyclerAdapter(this, courses);
 
-        displayNote();
+        displayNotes();
     }
 
-    private void displayNote() {
+
+    private void displayNotes() {
         mRecyclerItems.setLayoutManager(mNotesLayoutManager);
         mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
 
@@ -178,7 +181,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if(id == R.id.nav_notes){
-            displayNote();
+            displayNotes();
         } else if(id == R.id.nav_courses){
             displayCourses();
         } else if(id == R.id.nav_share){
