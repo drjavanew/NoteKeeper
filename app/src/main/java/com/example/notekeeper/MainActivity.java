@@ -254,7 +254,6 @@ public class MainActivity extends AppCompatActivity
 
                     return db.query(tablesWithJoin, noteColumns,
                             null, null, null, null, noteOrderBy);
-
                 }
             };
         }
