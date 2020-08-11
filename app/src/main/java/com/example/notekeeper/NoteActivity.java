@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -231,10 +232,18 @@ public class NoteActivity extends AppCompatActivity
     }
 
     private void deleteNoteFromDatabase() {
-        String selection = NoteInfoEntry._ID + " = ?";
-        String [] selectionArgs = {Integer.toString(mNoteId)};
-        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-        db.delete(NoteInfoEntry.TABLE_NAME, selection, selectionArgs);
+        final String selection = NoteInfoEntry._ID + " = ?";
+        final String [] selectionArgs = {Integer.toString(mNoteId)};
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
+                db.delete(NoteInfoEntry.TABLE_NAME, selection, selectionArgs);
+                return null;
+            }
+        };
+        task.execute();
+
     }
 
     private void storePreviousNoteValues() {
