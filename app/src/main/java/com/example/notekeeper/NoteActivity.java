@@ -27,6 +27,7 @@ import com.example.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry;
 import com.example.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry;
 
 import static com.example.notekeeper.NoteKeeperProviderContract.Courses;
+import static com.example.notekeeper.NoteKeeperProviderContract.Notes;
 
 public class NoteActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -57,6 +58,7 @@ public class NoteActivity extends AppCompatActivity
     private SimpleCursorAdapter mAdapterCourses;
     private boolean mCoursesQueryFinished;
     private boolean mNotesQueryFinished;
+    private Uri mNoteUri;
 
     @Override
     protected void onDestroy() {
@@ -210,12 +212,11 @@ public class NoteActivity extends AppCompatActivity
 
     private void createNewNote() {
         ContentValues values = new ContentValues();
-        values.put(NoteInfoEntry.COLUMN_COURSE_ID, "");
-        values.put(NoteInfoEntry.COLUMN_NOTE_TITLE, "");
-        values.put(NoteInfoEntry.COLUMN_NOTE_TEXT, "");
+        values.put(Notes.COLUMN_COURSE_ID, "");
+        values.put(Notes.COLUMN_NOTE_TITLE, "");
+        values.put(Notes.COLUMN_NOTE_TEXT, "");
 
-        SQLiteDatabase db = mDbOpenHelper.getWritableDatabase();
-        mNoteId = (int) db.insert(NoteInfoEntry.TABLE_NAME, null, values);
+        mNoteUri = getContentResolver().insert(Notes.CONTENT_URI, values);
     }
 
     @Override
