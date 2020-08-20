@@ -27,10 +27,13 @@ public class NoteKeeperProvider extends ContentProvider {
 
     public static final int NOTES_EXPANDED = 2;
 
+    private static final int NOTES_ROW = 3;
+
     static {
         sUriMatcher.addURI(AUTHORITY, Courses.PATH, COURSES);
         sUriMatcher.addURI(AUTHORITY, Notes.PATH, NOTES);
         sUriMatcher.addURI(AUTHORITY, Notes.PATH_EXPANDED, NOTES_EXPANDED);
+        sUriMatcher.addURI(AUTHORITY, Notes.PATH + "/#", NOTES_ROW);
     }
 
     public NoteKeeperProvider() {
@@ -97,7 +100,13 @@ public class NoteKeeperProvider extends ContentProvider {
             case NOTES_EXPANDED:
                 cursor = notesExpandedQuery(db, projection, selection, selectionArgs, sortOrder);
                 break;
-
+            case NOTES_ROW:
+                long rowId = ContentUris.parseId(uri);
+                String rowSelection = NoteInfoEntry._ID + " = ?";
+                String [] rowSelectionArgs = new String[]{Long.toString(rowId)};
+                cursor = db.query(NoteInfoEntry.TABLE_NAME, projection, rowSelection,
+                        rowSelectionArgs, null, null, null);
+                break;
         }
         return cursor;
     }
