@@ -1,10 +1,13 @@
 package com.example.notekeeper;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity
     private CourseRecyclerAdapter mCourseRecyclerAdapter;
     private GridLayoutManager mCoursesLayoutManger;
     private NoteKeeperOpenHelper mDbOpenHelper;
-
+    private SharedPreferences mPref;
 
 
     @Override
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        enableStrictMode();
 
         mDbOpenHelper = new NoteKeeperOpenHelper(this);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -67,9 +72,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        PreferenceManager.setDefaultValues(this,R.xml.general_preferences, false);
-        PreferenceManager.setDefaultValues(this,R.xml.data_sync_preferences, false);
-        PreferenceManager.setDefaultValues(this,R.xml.notification_preferences, false);
+        setDefaultValuesForPreferenceManager(this);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.NoteKeeper);
@@ -83,8 +86,33 @@ public class MainActivity extends AppCompatActivity
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         //NavigationUI.setupWithNavController(navigationView, navController);
         navigationView.setNavigationItemSelectedListener(this);
-        initializeDisplayContent();
+        initializeDisplayContent(this);
     }
+
+    private void setDefaultValuesForPreferenceManager(Context context) {
+        AsyncTask<Context, Void, Void> task= new AsyncTask<Context, Void, Void>() {
+            @Override
+            protected Void doInBackground(Context... contexts) {
+                Context mainContext = contexts[0];
+                PreferenceManager.setDefaultValues(mainContext,R.xml.general_preferences, false);
+                PreferenceManager.setDefaultValues(mainContext,R.xml.data_sync_preferences, false);
+                PreferenceManager.setDefaultValues(mainContext,R.xml.notification_preferences, false);
+                return null;
+            }
+        };
+        task.execute(context);
+    }
+
+    private void enableStrictMode() {
+        if(BuildConfig.DEBUG){
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build();
+            StrictMode.setThreadPolicy(policy);
+        }
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -119,27 +147,40 @@ public class MainActivity extends AppCompatActivity
         TextView textUserName = (TextView) headerView.findViewById(R.id.text_user_name);
         TextView textEmailAddress = (TextView) headerView.findViewById(R.id.text_email_address);
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        String userName = pref.getString("user_display_name", "");
-        String emailAddress = pref.getString("user_email_address", "");
+        mPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String userName = mPref.getString("user_display_name", "");
+        String emailAddress = mPref.getString("user_email_address", "");
 
         textUserName.setText(userName);
         textEmailAddress.setText(emailAddress);
     }
 
-    private void initializeDisplayContent() {
-        DataManager.loadFromDatabase(mDbOpenHelper);
-        mRecyclerItems = (RecyclerView) findViewById(R.id.list_items);
-        mNotesLayoutManager = new LinearLayoutManager(this);
-        mCoursesLayoutManger = new GridLayoutManager(this,
-                getResources().getInteger(R.integer.course_grid_span));
+    private void initializeDisplayContent(Context context) {
+        AsyncTask<Context, Void, Void> task = new AsyncTask<Context, Void, Void>() {
+            @Override
+            protected Void doInBackground(Context... contexts) {
+                Context mainContext = contexts[0];
+                DataManager.loadFromDatabase(mDbOpenHelper);
+                mRecyclerItems = (RecyclerView) findViewById(R.id.list_items);
+                mNotesLayoutManager = new LinearLayoutManager(mainContext);
+                mCoursesLayoutManger = new GridLayoutManager(mainContext,
+                        getResources().getInteger(R.integer.course_grid_span));
 
-        mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, null);
+                mNoteRecyclerAdapter = new NoteRecyclerAdapter(mainContext, null);
 
-        List<CourseInfo> courses = DataManager.getInstance().getCourses();
-        mCourseRecyclerAdapter = new CourseRecyclerAdapter(this, courses);
+                List<CourseInfo> courses = DataManager.getInstance().getCourses();
+                mCourseRecyclerAdapter = new CourseRecyclerAdapter(mainContext, courses);
 
-        displayNotes();
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                displayNotes();
+            }
+        };
+        task.execute(context);
     }
 
 
