@@ -66,6 +66,7 @@ public class NoteReminderNotification {
                 .setLargeIcon(picture)
                 .setContentTitle("Review note")
                 .setContentText(noteText)
+                .setTicker("Review note")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT).setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(noteText)
                         .setBigContentTitle(noteTitle)

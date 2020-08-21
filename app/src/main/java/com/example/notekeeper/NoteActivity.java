@@ -306,7 +306,9 @@ public class NoteActivity extends AppCompatActivity
     }
 
     private void showReminderNotification() {
-        NoteReminderNotification.notify(this, "Title", "This is dummy text", 0);
+        String noteText = mTextNoteText.getText().toString();
+        String noteTitle = mTextNoteTitle.getText().toString();
+        NoteReminderNotification.notify(this, noteTitle, noteText, 0);
     }
 
     @Override
