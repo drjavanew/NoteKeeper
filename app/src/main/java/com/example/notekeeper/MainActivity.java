@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         this.getSupportLoaderManager().restartLoader(LOADER_NOTES, null, this);
+        //TODO: find a way to put into Async Task
         updateNavHeader();
     }
 
