@@ -247,9 +247,15 @@ public class MainActivity extends AppCompatActivity
         if(id == R.id.action_settings){
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
+        } else if (id == R.id.action_backup_notes){
+            backupNotes();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void backupNotes() {
+        NoteBackup.doBackup(MainActivity.this, NoteBackup.ALL_COURSES);
     }
 
     @Override

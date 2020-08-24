@@ -48,8 +48,7 @@
     <string name="pref_title_favorite_social">Favorite social network</string>
     <string name="default_display_name">Your name</string>
     <string name="title_display_name">Display name</string>
-
-
+    <string name="back_up">Back Up</string>
 
 
 </resources>
