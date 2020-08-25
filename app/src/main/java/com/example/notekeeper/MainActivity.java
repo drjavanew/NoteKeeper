@@ -255,7 +255,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void backupNotes() {
-        NoteBackup.doBackup(MainActivity.this, NoteBackup.ALL_COURSES);
+        Intent intent = new Intent(this, NoteBackupService.class);
+        intent.putExtra(NoteBackupService.EXTRA_COURSE_ID, NoteBackup.ALL_COURSES);
+        startService(intent);
     }
 
     @Override
