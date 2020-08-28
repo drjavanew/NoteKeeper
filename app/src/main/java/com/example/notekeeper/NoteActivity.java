@@ -183,6 +183,8 @@ public class NoteActivity extends AppCompatActivity
 
         mTextNoteTitle.setText(noteTitle);
         mTextNoteText.setText(noteText);
+
+        CourseEventBroadcastHelper.sendEventBroadcast(this, courseId, "Editing Note");
     }
 
     private int getIndexOfCourseId(String courseId) {
